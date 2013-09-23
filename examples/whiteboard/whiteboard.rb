@@ -13,13 +13,17 @@ class Whiteboard
     start_buffer if @use_buffer
   end
 
-  def create_figure figure
+  def create_figure figure, auto_add = true
     @mutex.synchronize do
       figure[:id] = @next_id
       @next_id += 1
     end
 
-    add_figure figure
+    if auto_add
+      add_figure figure
+    end
+
+    figure
   end
 
   def add_figure figure

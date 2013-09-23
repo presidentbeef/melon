@@ -14,6 +14,7 @@ class WhiteboardTest < Minitest::Unit::TestCase
     figure = { :id => 1 }
     @wb.add_figure figure
     assert @wb.includes? figure[:id]
+    assert_equal 2, @wb.next_id
   end
 
   def test_ordering_with_no_buffer
@@ -72,6 +73,13 @@ class WhiteboardTest < Minitest::Unit::TestCase
     assert_equal 0, @wb.next_id
     @wb.create_figure x: 1, y: 2
     assert @wb.includes? 0
+    assert_equal 1, @wb.next_id
+  end
+
+  def test_create_figure_no_auto_add
+    assert_equal 0, @wb.next_id
+    @wb.create_figure({x: 1, y: 2}, false)
+    refute @wb.includes? 0
     assert_equal 1, @wb.next_id
   end
 end
