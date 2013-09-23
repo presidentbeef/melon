@@ -1,9 +1,9 @@
 require 'minitest/autorun'
-require_relative '../whiteboard'
+require_relative '../lib/board'
 
-class WhiteboardTest < Minitest::Unit::TestCase
+class BoardTest < Minitest::Unit::TestCase
   def setup
-    @wb = Whiteboard.new
+    @wb = Board.new
   end
 
   def teardown
@@ -18,7 +18,7 @@ class WhiteboardTest < Minitest::Unit::TestCase
   end
 
   def test_ordering_with_no_buffer
-    @wb = Whiteboard.new(false)
+    @wb = Board.new(false)
 
     (1..15).to_a.shuffle.each do |i|
       @wb.add_figure :id => i
@@ -72,14 +72,14 @@ class WhiteboardTest < Minitest::Unit::TestCase
   def test_create_figure
     assert_equal 0, @wb.next_id
     @wb.create_figure x: 1, y: 2
-    assert @wb.includes? 0
+    refute @wb.includes? 0
     assert_equal 1, @wb.next_id
   end
 
-  def test_create_figure_no_auto_add
+  def test_create_figure_auto_add
     assert_equal 0, @wb.next_id
-    @wb.create_figure({x: 1, y: 2}, false)
-    refute @wb.includes? 0
+    @wb.create_figure({x: 1, y: 2}, true)
+    assert @wb.includes? 0
     assert_equal 1, @wb.next_id
   end
 end

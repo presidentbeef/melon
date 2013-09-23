@@ -1,6 +1,6 @@
 require 'thread'
 
-class Whiteboard
+class Board
   attr_reader :board, :next_id
 
   def initialize use_buffer = true
@@ -13,7 +13,7 @@ class Whiteboard
     start_buffer if @use_buffer
   end
 
-  def create_figure figure, auto_add = true
+  def create_figure figure, auto_add = false
     @mutex.synchronize do
       figure[:id] = @next_id
       @next_id += 1
