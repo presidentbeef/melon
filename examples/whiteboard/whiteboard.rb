@@ -1,46 +1,100 @@
 require 'thread'
 
 class Whiteboard
-  def initialize
+  attr_reader :board, :next_id
+
+  def initialize use_buffer = true
+    @use_buffer = use_buffer
     @mutex = Mutex.new
     @pending = []
     @board = []
     @next_id = 0
+
+    start_buffer if @use_buffer
+  end
+
+  def create_figure figure
+    @mutex.synchronize do
+      figure[:id] = @next_id
+      @next_id += 1
+    end
+
+    add_figure figure
   end
 
   def add_figure figure
     @mutex.synchronize do
-      if figure[:previous]
-        if index = find_figure(figure[:previous])
-          insert_figure figure, index
-        else
-          @pending << figure
-        end
+      if @board.empty? or includes_previous? figure
+        insert_figure figure
+      elsif @use_buffer
+        @pending << figure
       else
-        @board << figure
+        insert_figure figure
+      end
+    end
+  end
+
+  def includes? figure_id
+    @mutex.synchronize do
+      @board.find do |f|
+        f[:id] == figure_id
+      end
+    end
+  end
+
+  def clear_buffer
+    @mutex.synchronize do
+      @pending.sort_by {|f| f[:id] }.each do |f|
+        insert_figure f
       end
 
-      if figure[:id] > @next_id
-        @next_id = figure[:id] + 1
-      end
+      @pending.clear
+    end
+  end
+
+  def stop
+    if @buffer_thread
+      @buffer_thread.kill
     end
   end
 
   private
 
-  def find_figure figure_id
-    index = @board.rindex do |figure|
-      figure[:id] == figure_id
+  # Starts a thread that empties the buffer every 10 seconds
+  def start_buffer
+    @buffer_thread = Thread.new do
+      loop do
+        sleep 10
+        clear_buffer
+      end
     end
-
-    index &&= index + 1
   end
 
-  def insert_figure figure, index
-    if index == @board.length
-      @board << figure
+  def includes_previous? figure
+    prev = figure[:id] - 1
+    @board.reverse_each do |f|
+      if f[:id] == prev
+        return true
+      end
+    end
+
+    false
+  end
+
+  def insert_figure figure
+    id = figure[:id]
+    index = @board.rindex do |f|
+      f[:id] <= id
+    end
+
+    if index
+      @board.insert(index + 1, figure)
     else
-      @board.insert index, figure
+      @board.unshift figure
+    end
+
+    if figure[:id] >= next_id
+      @next_id = figure[:id] + 1
     end
   end
 end
