@@ -1,7 +1,7 @@
 require 'thread'
 
 class Whiteboard
-  attr_reader :board, :next_id
+  attr_reader :board, :next_id, :out_of_order
 
   def initialize use_buffer = true, &block
     @add_figure_callback = block
@@ -10,6 +10,7 @@ class Whiteboard
     @pending = []
     @board = []
     @next_id = 0
+    @out_of_order = 0
 
     start_buffer if @use_buffer
   end
@@ -117,8 +118,18 @@ class Whiteboard
     end
 
     if index
+      if index != @board.length - 1
+        # id is earlier, so it's out of order
+        @out_of_order += 1
+      end
+
       @board.insert(index + 1, figure)
     else
+      unless @board.empty?
+        # id is earlier than an id already seen
+        @out_of_order += 1
+      end
+
       @board.unshift figure
     end
 
