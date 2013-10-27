@@ -3,11 +3,9 @@ require_relative 'lib/whiteboard'
 require_relative 'lib/figure'
 
 class MelonWhiteboard < Whiteboard
-  attr_reader :wb
-
-  def initialize port = nil
-    @melon = Melon.with_zmq(port)
-    @wb = Board.new
+  def initialize
+    super
+    @melon = Melon.with_zmq
   end
 
   def add_remote port
@@ -15,6 +13,7 @@ class MelonWhiteboard < Whiteboard
   end
 
   def add_local_figure figure
+    super
     @melon.write [figure]
   end
 
@@ -22,7 +21,7 @@ class MelonWhiteboard < Whiteboard
     figures = @melon.read_all [Figure]
 
     figures.each do |figure|
-      @wb.add_figure figure[0]
+      add_figure figure[0]
     end
   end
 end

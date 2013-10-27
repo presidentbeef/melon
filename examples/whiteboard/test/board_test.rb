@@ -1,9 +1,9 @@
 require 'minitest/autorun'
-require_relative '../lib/board'
+require_relative '../lib/whiteboard'
 
-class BoardTest < Minitest::Unit::TestCase
+class WhiteboardTest < Minitest::Unit::TestCase
   def setup
-    @wb = Board.new
+    @wb = Whiteboard.new
   end
 
   def teardown
@@ -18,7 +18,7 @@ class BoardTest < Minitest::Unit::TestCase
   end
 
   def test_ordering_with_no_buffer
-    @wb = Board.new(false)
+    @wb = Whiteboard.new(false)
 
     (1..15).to_a.shuffle.each do |i|
       @wb.add_figure :id => i
