@@ -12,6 +12,9 @@ require_relative 'melon/stored_message'
 Thread.abort_on_exception = true
 
 module Melon 
+  # Creates a new Melon instance using ZMQ (the only option currently)
+  # on the given _port_. If not _port_ is not provided, a random port
+  # will be used.
   def self.with_zmq port = nil
     local = LocalStorage.new
     server = StorageServer.new(local, Melon::Paradigm.zmq, port)

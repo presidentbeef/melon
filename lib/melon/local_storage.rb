@@ -1,5 +1,7 @@
 module Melon
   class LocalStorage
+    # Create a new local storage with a random ID.
+    # Local stores are generally not used directly.
     def initialize
       @tmutex = Mutex.new
       @rmutex = RWLock.new
@@ -10,18 +12,21 @@ module Melon
       @readable = []
     end
 
+    # Store a message.
     def store message
       tsync do
         @takable << StoredMessage.new(@pid, next_id, message)
       end
     end
 
+    # Write a message.
     def write message
       @rmutex.write_sync do
         @readable << StoredMessage.new(@pid, next_id, message)
       end
     end
 
+    # Find and remove a matching message.
     def find_and_take template
       message = nil
 
@@ -42,6 +47,7 @@ module Melon
       message
     end
 
+    # Take a message with the given ID.
     def take id
       message = nil
 
@@ -62,6 +68,7 @@ module Melon
       message
     end
 
+    # Take all messages matching the given template.
     def take_all template
       messages = []
 
@@ -85,6 +92,7 @@ module Melon
       messages
     end
 
+    # Returns message with the given ID.
     def fetch id
       each_unread([]) do |m|
         if m.id == id
@@ -95,6 +103,8 @@ module Melon
       nil
     end
 
+    # Find unread message matching the given template. If _fetch_ is false,
+    # only returns the ID.
     def find_unread template, read, fetch = true
       each_unread(read) do |m|
         if m =~ template
@@ -109,6 +119,7 @@ module Melon
       nil
     end
 
+    # Find all unread messages matching the given template.
     def find_all_unread template, read
       results = []
 
@@ -121,11 +132,13 @@ module Melon
       results
     end
 
+    # Does nothing! Yet.
     def gc
     end
 
     private
 
+    # Synchronizes access to unread messages.
     def each_unread read
       @rmutex.read_sync do
         @readable.each do |m|
@@ -136,12 +149,14 @@ module Melon
       end
     end
 
+    # Synchronizes access to untaken messages.
     def tsync
       @tmutex.synchronize do
         yield
       end
     end
 
+    # Returns the next ID.
     def next_id
       @imutex.synchronize do
         @mid += 1
