@@ -17,7 +17,12 @@ class Whiteboard
 
   def create_figure figure, auto_add = false
     @mutex.synchronize do
-      figure[:id] = @next_id
+      if @board.length > 0
+        figure[:id] = @board.last[:id] + 1
+      else
+        figure[:id] = 0
+      end
+
       @next_id += 1
     end
 
@@ -131,10 +136,6 @@ class Whiteboard
       end
 
       @board.unshift figure
-    end
-
-    if figure[:id] >= next_id
-      @next_id = figure[:id] + 1
     end
   end
 end
