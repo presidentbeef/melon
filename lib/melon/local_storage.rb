@@ -1,3 +1,5 @@
+require 'rwlock'
+
 module Melon
   class LocalStorage
     # Create a new local storage with a random ID.
@@ -164,40 +166,5 @@ module Melon
     end
   end
 
-  class RWLock
-    def initialize
-      @size = 10
-      @writing = false
-      @write_lock = Mutex.new
-      @q = SizedQueue.new(@size)
-    end
 
-    def read_sync
-      wait_on_writes # queue reads if writer is waiting
-
-      @q.push true
-
-      begin
-        yield
-      ensure
-        @q.pop
-      end
-    end
-
-    def write_sync
-      @write_lock.synchronize do
-        @writing = true
-        rs = @q.length
-        @size.times { @q.push true }
-        yield
-        @writing = false
-        @q.clear
-      end
-    end
-
-    def wait_on_writes
-      @write_lock.lock
-      @write_lock.unlock
-    end
-  end
 end

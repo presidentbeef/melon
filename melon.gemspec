@@ -9,4 +9,5 @@ Gem::Specification.new do |s|
   s.license = "MIT"
   s.add_dependency "dumb_numb_set", "~>0.0.3"
   s.add_dependency "ffi-rzmq", "~>1.0.1"
+  s.add_dependency "rwlock"
 end
