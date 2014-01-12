@@ -7,22 +7,20 @@ class WhiteboardTest < Minitest::Test
     @wb = Whiteboard.new
   end
 
-  def teardown
-    @wb.stop
-  end
-
   def test_add_figure
-    figure = { :id => 1 }
+    figure = @wb.create_figure({})
+    figure[:id] = 1
     @wb.add_figure figure
     assert @wb.includes? figure[:id]
-    assert_equal 2, @wb.next_id
+    next_figure = @wb.create_figure({})
+    assert_equal 2, next_figure[:id]
   end
 
-  def test_ordering_with_no_buffer
-    @wb = Whiteboard.new(false)
-
+  def test_ordering
     (1..15).to_a.shuffle.each do |i|
-      @wb.add_figure :id => i
+      fig = @wb.create_figure({}, false)
+      fig[:id] = i
+      @wb.add_figure fig
     end
 
     last = 0
@@ -30,44 +28,6 @@ class WhiteboardTest < Minitest::Test
       last += 1
       assert_equal last, f[:id]
     end
-  end
-
-  def test_ordering_with_buffer
-    (1..15).to_a.shuffle.each do |i|
-      @wb.add_figure :id => i
-    end
-
-    @wb.clear_buffer
-
-    last = 0
-    @wb.board.each do |f|
-      last += 1
-      assert_equal last, f[:id]
-    end
-
-    assert_equal 15, @wb.board.length
-    assert_equal 16, @wb.next_id
-  end
-
-  def test_random_ordering_with_buffer
-    20.times do |i|
-      @wb.add_figure :id => rand(100)
-    end
-
-    @wb.clear_buffer
-
-    last = nil
-    @wb.board.each do |f|
-      if last.nil?
-        last = f[:id]
-      else
-        assert f[:id] >= last
-        last = f[:id]
-      end
-    end
-
-    next_id = last + 1
-    assert_equal next_id, @wb.next_id
   end
 
   def test_create_figure
