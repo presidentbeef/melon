@@ -1,18 +1,32 @@
 require 'thread'
+require 'set'
 
 class Whiteboard
-  attr_reader :board, :next_id, :out_of_order
+  attr_reader :board, :next_id
 
-  def initialize use_buffer = true, &block
+  def initialize &block
     @add_figure_callback = block
-    @use_buffer = use_buffer
     @mutex = Mutex.new
     @pending = []
+    @my_figures = Set.new
     @board = []
     @next_id = 0
     @out_of_order = 0
+    @my_id = rand(2**32)
+  def out_of_order?
+    lists = Hash.new
+    @board.each do |fig|
+      lists[fig[:seq].first] ||= []
+      lists[fig[:seq].first] << fig
+    end
 
-    start_buffer if @use_buffer
+    ooo = 0
+
+    lists.each do |id, l|
+      ooo += count_swaps(l) { |f| f[:seq].last }
+    end
+
+    return ooo, @out_of_order
   end
 
   def create_figure figure, auto_add = false
@@ -35,13 +49,7 @@ class Whiteboard
 
   def add_figure figure
     @mutex.synchronize do
-      if @board.empty? or includes_previous? figure
-        insert_figure figure
-      elsif @use_buffer
-        @pending << figure
-      else
-        insert_figure figure
-      end
+      insert_figure figure
     end
   end
 
@@ -53,22 +61,6 @@ class Whiteboard
     end
   end
 
-  def clear_buffer
-    @mutex.synchronize do
-      @pending.sort_by {|f| f[:id] }.each do |f|
-        insert_figure f
-      end
-
-      @pending.clear
-    end
-  end
-
-  def stop
-    if @buffer_thread
-      @buffer_thread.kill
-    end
-  end
-
   def add_rectangle figure
     add_local_figure create_figure(figure.merge(:type => :rectangle))
   end
@@ -77,7 +69,7 @@ class Whiteboard
     add_local_figure create_figure(figure.merge(:type => :line))
   end
 
-  def add_circle figure 
+  def add_circle figure
     add_local_figure create_figure(figure.merge(:type => :circle))
   end
 
@@ -95,12 +87,6 @@ class Whiteboard
 
   private
 
-  # Starts a thread that empties the buffer every 10 seconds
-  def start_buffer
-    @buffer_thread = Thread.new do
-      loop do
-        sleep 10
-        clear_buffer
       end
     end
   end
@@ -137,5 +123,27 @@ class Whiteboard
 
       @board.unshift figure
     end
+  end
+
+  private
+
+  def count_swaps list, &sort_block
+    swaps = 0
+
+    # Get a sorted list for comparison
+    sorted = list.sort_by &sort_block
+
+    # Check each elements against where they should be,
+    # swapping them if necessary and counting the swaps.
+    list.each_with_index do |element, index|
+      next if element == sorted[index]
+      swaps += 1
+
+      # Find where the element should be and swap it into position
+      should_be = list.find_index(sorted[index])
+      list[index], list[should_be] = list[should_be], list[index]
+    end
+
+    swaps
   end
 end
