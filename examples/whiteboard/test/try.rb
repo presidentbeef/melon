@@ -1,9 +1,12 @@
 require '../melon_whiteboard'
 
-mwb = MelonWhiteboard.new do; end
+mwb = MelonWhiteboard.new {}
 
-print "Other port: "
-mwb.add_remote gets.strip.to_i
+ARGV.each do |port|
+  mwb.add_remote port.to_i
+end
+
+sleep rand 3
 
 t = Thread.new do
   loop do
@@ -11,8 +14,14 @@ t = Thread.new do
   end
 end
 
-10.times do |i|
-  mwb.add_local_figure type: :point, x: 1, y: 0, id: i
-  sleep 10
-  puts mwb.board.length
+x = ($stdin.gets.chomp == "y")
+
+30.times do
+  mwb.add_local_figure(mwb.create_figure({type: :point, x: 1, y: 0}, true)) if x
+  sleep(rand(3) + 2)
+  p mwb.out_of_order
 end
+
+t.join unless x
+
+puts "done"

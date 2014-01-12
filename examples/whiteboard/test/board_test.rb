@@ -1,7 +1,8 @@
+gem 'minitest'
 require 'minitest/autorun'
 require_relative '../lib/whiteboard'
 
-class WhiteboardTest < Minitest::Unit::TestCase
+class WhiteboardTest < Minitest::Test
   def setup
     @wb = Whiteboard.new
   end
