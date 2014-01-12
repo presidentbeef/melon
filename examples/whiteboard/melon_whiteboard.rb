@@ -3,9 +3,9 @@ require_relative 'lib/whiteboard'
 require_relative 'lib/figure'
 
 class MelonWhiteboard < Whiteboard
-  def initialize
-    super
-    @melon = Melon.with_zmq
+  def initialize port = nil, &block
+    @melon = Melon.with_zmq port
+    super &block
   end
 
   def add_remote port
