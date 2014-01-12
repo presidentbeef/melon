@@ -13,6 +13,9 @@ class Whiteboard
     @next_id = 0
     @out_of_order = 0
     @my_id = rand(2**32)
+    @max_time = 0
+  end
+
   def out_of_order?
     lists = Hash.new
     @board.each do |fig|
@@ -31,12 +34,14 @@ class Whiteboard
 
   def create_figure figure, auto_add = false
     @mutex.synchronize do
+      figure[:time] = (Time.now.to_f * 1000).to_i
       if @board.length > 0
         figure[:id] = @board.last[:id] + 1
       else
         figure[:id] = 0
       end
 
+      figure[:seq] = [@my_id, @next_id]
       @next_id += 1
     end
 
@@ -87,22 +92,21 @@ class Whiteboard
 
   private
 
-      end
-    end
-  end
-
-  def includes_previous? figure
-    prev = figure[:id] - 1
-    @board.reverse_each do |f|
-      if f[:id] == prev
-        return true
-      end
-    end
-
-    false
-  end
-
   def insert_figure figure
+    if @my_id == figure[:seq].first
+      if @my_figures.include? figure[:seq].last
+        return
+      else
+        @my_figures << figure[:seq].last
+      end
+    end
+
+    delay = (Time.now.to_f * 1000) - figure[:time]
+    if delay > @max_time
+      @max_time = delay
+      puts delay
+    end
+
     id = figure[:id]
     index = @board.rindex do |f|
       f[:id] <= id
@@ -112,12 +116,14 @@ class Whiteboard
       if index != @board.length - 1
         # id is earlier, so it's out of order
         @out_of_order += 1
+        #puts "Last ID is #{@board.last[:id]} and this is #{figure[:id]} and index is #{index} out of #{@board.length}"
       end
 
       @board.insert(index + 1, figure)
     else
       unless @board.empty?
         # id is earlier than an id already seen
+        #puts "Last ID is #{@board.last[:id]} and this is #{figure[:id]}"
         @out_of_order += 1
       end
 
