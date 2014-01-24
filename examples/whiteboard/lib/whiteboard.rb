@@ -131,8 +131,6 @@ class Whiteboard
     end
   end
 
-  private
-
   def count_swaps list, &sort_block
     swaps = 0
 
