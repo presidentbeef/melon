@@ -53,6 +53,7 @@ class Whiteboard
 
   def add_figure figure
     @mutex.synchronize do
+      figure[:received] = (Time.now.to_f * 1000).to_i unless figure[:seq].first == @my_id
       insert_figure figure
     end
   end
