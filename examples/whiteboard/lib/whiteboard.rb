@@ -31,7 +31,7 @@ class Whiteboard
     return ooo, @out_of_order
   end
 
-  def create_figure figure, auto_add = false
+  def create_figure figure, auto_add = true
     @mutex.synchronize do
       figure[:time] = (Time.now.to_f * 1000).to_i
       if @board.length > 0
