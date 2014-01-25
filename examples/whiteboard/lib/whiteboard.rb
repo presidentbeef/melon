@@ -13,7 +13,6 @@ class Whiteboard
     @next_id = 0
     @out_of_order = 0
     @my_id = rand(2**32)
-    @max_time = 0
   end
 
   def out_of_order?
@@ -99,12 +98,6 @@ class Whiteboard
       else
         @my_figures << figure[:seq].last
       end
-    end
-
-    delay = (Time.now.to_f * 1000) - figure[:time]
-    if delay > @max_time
-      @max_time = delay
-      puts delay
     end
 
     id = figure[:id]
