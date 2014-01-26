@@ -32,14 +32,14 @@ class WhiteboardTest < Minitest::Test
 
   def test_create_figure
     assert_equal 0, @wb.next_id
-    @wb.create_figure x: 1, y: 2
+    @wb.create_figure({x: 1, y: 2}, false)
     refute @wb.includes? 0
     assert_equal 1, @wb.next_id
   end
 
   def test_create_figure_auto_add
     assert_equal 0, @wb.next_id
-    @wb.create_figure({x: 1, y: 2}, true)
+    @wb.create_figure({x: 1, y: 2})
     assert @wb.includes? 0
     assert_equal 1, @wb.next_id
   end
