@@ -3,22 +3,23 @@ require_relative 'lib/whiteboard'
 require_relative 'lib/figure'
 
 class PSWhiteboard < Whiteboard
-  def initialize port = nil, &block
-    @ps = PS.new port
+  def initialize port, addr, &block
+    @ps = PS.new port, addr
     @ps.subscribe "whiteboard" do |figure|
       add_figure eval(figure)
+      add_figure Marshal.load(figure)
     end
 
     super &block
   end
 
   def add_remote addr, port
-    @ps.add_neighbor "127.0.0.1", port
+    @ps.add_neighbor addr, port
   end
 
   def add_local_figure figure
     super
-    @ps.publish "whiteboard", figure
+    @ps.publish "whiteboard", Marshal.dump(figure)
   end
 
   def wait
