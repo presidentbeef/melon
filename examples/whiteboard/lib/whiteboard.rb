@@ -10,6 +10,7 @@ class Whiteboard
     @pending = []
     @my_figures = Set.new
     @board = []
+    @figure_order = []
     @next_id = 0
     @out_of_order = 0
     @my_id = rand(2**32)
@@ -17,15 +18,15 @@ class Whiteboard
 
   def out_of_order?
     lists = Hash.new
-    @board.each do |fig|
-      lists[fig[:seq].first] ||= []
-      lists[fig[:seq].first] << fig
+    @figure_order.each do |fig|
+      lists[fig.first] ||= []
+      lists[fig.first] << fig
     end
 
     ooo = 0
 
     lists.each do |id, l|
-      ooo += count_swaps(l) { |f| f[:seq].last }
+      ooo += count_swaps(l) { |f| f.last }
     end
 
     return ooo, @out_of_order
@@ -93,12 +94,15 @@ class Whiteboard
   private
 
   def insert_figure figure
-    if @my_id == figure[:seq].first
-      if @my_figures.include? figure[:seq].last
+    seq = figure[:seq]
+    if @my_id == seq.first
+      if @my_figures.include? seq.last
         return
       else
-        @my_figures << figure[:seq].last
+        @my_figures << seq.last
       end
+    else
+      @figure_order << seq
     end
 
     id = figure[:id]
