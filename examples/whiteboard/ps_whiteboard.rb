@@ -12,7 +12,7 @@ class PSWhiteboard < Whiteboard
     super &block
   end
 
-  def add_remote port
+  def add_remote addr, port
     @ps.add_neighbor "127.0.0.1", port
   end
 

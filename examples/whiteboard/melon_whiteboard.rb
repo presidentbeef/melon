@@ -8,8 +8,8 @@ class MelonWhiteboard < Whiteboard
     super &block
   end
 
-  def add_remote port
-    @melon.add_remote port
+  def add_remote port, address = "localhost"
+    @melon.add_remote port, address
   end
 
   def add_local_figure figure
