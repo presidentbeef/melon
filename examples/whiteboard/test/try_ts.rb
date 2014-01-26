@@ -1,6 +1,6 @@
-require '../melon_whiteboard'
+require '../ts_whiteboard'
 
-mwb = MelonWhiteboard.new(ARGV.pop) do; end
+mwb = TSWhiteboard.new(ARGV.pop) do; end
 
 ARGV.each do |port|
   mwb.add_remote port.to_i
@@ -8,7 +8,7 @@ end
 
 sleep rand 3
 
-t = Thread.new do
+Thread.new do
   loop do
     mwb.add_remote_figures
   end
