@@ -21,3 +21,7 @@ gem install manet_melon*.gem
 ### Examples
 
 See README.md in the examples directory for information about running the examples.
+
+### Documentation
+
+See [here](https://escholarship.org/uc/item/8md1h50q#page-82) for more details about MELON.
