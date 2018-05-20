@@ -9,6 +9,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     dumb_numb_set (1.0.0)
+    minitest (5.10.3)
+    rake (12.3.1)
     rwlock (1.0.0)
 
 PLATFORMS
@@ -16,6 +18,8 @@ PLATFORMS
 
 DEPENDENCIES
   manet_melon!
+  minitest
+  rake
 
 BUNDLED WITH
    1.16.2
