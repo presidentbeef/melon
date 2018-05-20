@@ -7,6 +7,6 @@ Gem::Specification.new do |s|
   s.homepage = ""
   s.files = ["README.md"] + Dir["lib/**/*.rb"]
   s.license = "MIT"
-  s.add_dependency "dumb_numb_set", "~>0.0.3"
-  s.add_dependency "ffi-rzmq", "~>1.0.1"
+  s.add_dependency "dumb_numb_set", "~>1.0"
+  s.add_dependency "rwlock", "~>1.0"
 end
