@@ -1,10 +1,8 @@
+require 'dumb_numb_set'
+
 module Melon
   class Paradigm
     include Logit
-
-    def self.zmq
-      @zmq ||= ZMQ::Context.new(1)
-    end
 
     def initialize local
       @servers = []
@@ -15,8 +13,8 @@ module Melon
       add_server @local
     end
 
-    def add_remote port, address = "localhost"
-      add_server RemoteStorage.new(Paradigm.zmq, address, port)
+    def add_remote remote_storage
+      add_server remote_storage
     end
 
     def add_server server

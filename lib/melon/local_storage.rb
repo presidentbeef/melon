@@ -1,4 +1,9 @@
+require 'rwlock'
+require 'securerandom'
+require_relative 'stored_message'
+
 module Melon
+  # Melon::LocalStorage provides thread-safe operations on the Melon storage space.
   class LocalStorage
     def initialize
       @tmutex = Mutex.new
@@ -10,18 +15,21 @@ module Melon
       @readable = []
     end
 
+    # Stores a take-only message
     def store message
       tsync do
         @takable << StoredMessage.new(@pid, next_id, message)
       end
     end
 
+    # Stores a read-only message
     def write message
       @rmutex.write_sync do
         @readable << StoredMessage.new(@pid, next_id, message)
       end
     end
 
+    # Removes and returns a single matching take-only message
     def find_and_take template
       message = nil
 
@@ -42,6 +50,7 @@ module Melon
       message
     end
 
+    # Removes and returns a single take-only message by ID
     def take id
       message = nil
 
@@ -62,6 +71,7 @@ module Melon
       message
     end
 
+    # Removes and returns all matching take-only messages
     def take_all template
       messages = []
 
@@ -85,6 +95,7 @@ module Melon
       messages
     end
 
+    # Returns the read-only message with the given ID
     def fetch id
       each_unread([]) do |m|
         if m.id == id
@@ -95,6 +106,10 @@ module Melon
       nil
     end
 
+    # Finds first matching unread message.
+    #
+    # If `fetch` is `true`, returns the actual message. If `false`, returns
+    # the message ID.
     def find_unread template, read, fetch = true
       each_unread(read) do |m|
         if m =~ template
@@ -109,6 +124,7 @@ module Melon
       nil
     end
 
+    # Returns all unread messages matching the given template
     def find_all_unread template, read
       results = []
 
@@ -126,6 +142,8 @@ module Melon
 
     private
 
+    # Iterates over each unread message. Achieves thread-safety using the
+    # readers-writer lock
     def each_unread read
       @rmutex.read_sync do
         @readable.each do |m|
@@ -136,53 +154,18 @@ module Melon
       end
     end
 
+    # Lock thread for the take-able message list
     def tsync
       @tmutex.synchronize do
         yield
       end
     end
 
+    # Set and return next message ID (thread-safe)
     def next_id
       @imutex.synchronize do
         @mid += 1
       end
-    end
-  end
-
-  class RWLock
-    def initialize
-      @size = 10
-      @writing = false
-      @write_lock = Mutex.new
-      @q = SizedQueue.new(@size)
-    end
-
-    def read_sync
-      wait_on_writes # queue reads if writer is waiting
-
-      @q.push true
-
-      begin
-        yield
-      ensure
-        @q.pop
-      end
-    end
-
-    def write_sync
-      @write_lock.synchronize do
-        @writing = true
-        rs = @q.length
-        @size.times { @q.push true }
-        yield
-        @writing = false
-        @q.clear
-      end
-    end
-
-    def wait_on_writes
-      @write_lock.lock
-      @write_lock.unlock
     end
   end
 end
