@@ -14,22 +14,32 @@ module Melon
       add_server @local
     end
 
+    # Adds a remote server
+    # TODO: remove?
     def add_remote remote_storage
       add_server remote_storage
     end
 
+    # Adds a storage server
     def add_server server
       @servers << server
     end
 
+    # Store a take-only message locally
     def store message
       @local.store message
     end
 
+    # Write a read-only message locally
     def write message
       @local.write message
     end
 
+    # Read a read-only message from any server (including local).
+    # Blocks by default if no messages are available.
+    #
+    # If `block` is set to `false`, `nil` will be returned if no matching
+    # messages are found.
     def read template, block = true
       loop do
         each_server do |s|
@@ -49,6 +59,11 @@ module Melon
       nil
     end
 
+    # Take a take-only message from any server (including local).
+    # Blocks by default if no messages are available.
+    #
+    # If `block` is set to `false`, `nil` will be returned if no matching
+    # messages are found.
     def take template, block = true
       loop do
         each_server do |s|
@@ -67,6 +82,11 @@ module Melon
       nil
     end
 
+    # Reads all matching unread read-only message from any server (including local).
+    # Blocks by default if no messages are available.
+    #
+    # If `block` is set to `false`, an empty array will be returned if no matching
+    # messages are found.
     def read_all template, block = true
       results = []
 
@@ -87,6 +107,11 @@ module Melon
       results.map(&:message)
     end
 
+    # Takes all matching take-only message from any server (including local).
+    # Blocks by default if no messages are available.
+    #
+    # If `block` is set to `false`, an empty array will be returned if no matching
+    # messages are found.
     def take_all template, block = true
       results = []
 
@@ -107,6 +132,7 @@ module Melon
 
     private
 
+    # Iterates over each server in random order
     def each_server
       begin
         @servers.shuffle.each do |s|
