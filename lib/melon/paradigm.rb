@@ -1,10 +1,11 @@
 require 'dumb_numb_set'
+require_relative 'local_storage'
 
 module Melon
   class Paradigm
     include Logit
 
-    def initialize local
+    def initialize local = Melon::LocalStorage.new
       @servers = []
       @local = local
       @read = DumbNumbSet.new
