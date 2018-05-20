@@ -2,7 +2,7 @@
 
 MELON is a new communication paradigm for mobile ad hoc networks (MANETs).
 
-This library is a prototype implementation of MELON in Ruby using ZeroMQ.
+This library is a prototype implementation of MELON in Ruby.
 
 ### Concepts
 
@@ -43,7 +43,6 @@ Guarantees:
 ### Requirements
 
 * Ruby
-* [ZeroMQ](zeromq.org)
 
 ### Installation
 
