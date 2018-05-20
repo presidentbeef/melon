@@ -124,4 +124,68 @@ class TestParadigm < Minitest::Test
     assert_equal 2, read2.length
     assert read3.empty?
   end
+
+  def test_read_with_threads
+    storage = Melon::LocalStorage.new
+    m1 = m2 = nil
+
+    t1 = Thread.new do
+      m1 = Melon::Paradigm.new(storage)
+
+      100.times do |i|
+        m1.write [1, i]
+      end
+    end
+
+    t2 = Thread.new do
+      m2 = Melon::Paradigm.new(storage)
+
+      100.times do |i|
+        m2.write [2, i]
+      end
+    end
+
+    t2.join
+    t1.join
+
+    msgs1 = nil
+    msgs2 = nil
+
+    t3 = Thread.new do
+      msgs1 = m1.read_all [Integer, Integer]
+    end
+
+    t4 = Thread.new do
+      msgs2 = m2.read_all [Integer, Integer]
+    end
+
+    t4.join
+    t3.join
+
+    assert_equal 200, msgs1.length
+    assert_equal 200, msgs2.length
+
+    assert msgs1.include? [2, 42]
+    assert msgs2.include? [1, 42]
+  end
+
+  def test_read_write_with_threads
+    storage = Melon::LocalStorage.new
+
+    t1 = Thread.new do
+      m1 = Melon::Paradigm.new(storage)
+      msg = m1.read [Integer, Integer]
+
+      assert_equal [1, 1], msg
+    end
+
+    t2 = Thread.new do
+      Thread.pass
+      m2 = Melon::Paradigm.new(storage)
+      m2.write [1, 1]
+    end
+
+    t2.join
+    t1.join
+  end
 end
