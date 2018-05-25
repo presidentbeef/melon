@@ -6,9 +6,24 @@ module Melon
       def initialize storage, host: "localhost", port: 8484
         @storage = storage
         @port = port
+        @uri = "druby://#{host}:#{port}"
 
-        uri = "druby://#{host}:#{port}"
-        Melon.local_drb_servers << ::DRb.start_service(uri, self)
+        ::DRb.start_service(@uri, self)
+      end
+
+      def stop
+        if server = ::DRb.fetch_server(@uri)
+          server.stop_service
+          server.thread.join
+        end
+      end
+
+      def alive?
+        if server = ::DRb.fetch_server(@uri)
+          server.alive?
+        else
+          false
+        end
       end
 
       def find_unread template, read_msgs
