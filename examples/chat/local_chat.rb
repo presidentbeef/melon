@@ -1,4 +1,3 @@
-require_relative '../../lib/melon'
 require_relative 'chat'
 
 print "Name: "

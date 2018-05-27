@@ -5,7 +5,7 @@ def random_string
   ('a'..'z').to_a.sample(rand 20).join
 end
 
-melon = Melon.with_zmq
+melon = Melon::Paradigm.new
 
 SIZE = ARGV[0].to_i
 

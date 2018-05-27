@@ -2,7 +2,7 @@ require 'benchmark'
 require_relative '../../lib/melon'
 $stdout.sync = true
 
-melon = Melon.with_zmq 9998
+melon = Melon::Paradigm.new
 
 messages = []
 

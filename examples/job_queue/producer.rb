@@ -1,15 +1,18 @@
-require "melon"
+require "melon/drb"
 require_relative "adder"
 
-melon = Melon.with_zmq
+melon = Melon.with_drb
+
 print "Worker remote port: "
-melon.add_remote gets.strip.to_i
+melon.add_remote port: gets.strip.to_i
 
-print "Integers to add: "
-numbers = gets.split(/[^0-9]/).map(&:to_i)
-job = Adder.new(*numbers)
+loop do
+  print "Integers to add: "
+  numbers = gets.split(/[^0-9]/).map(&:to_i)
+  job = Adder.new(*numbers)
 
-melon.store [job]
-result = melon.take [job.id, Integer]
+  melon.store [job]
+  result = melon.take [job.id, Integer]
 
-puts "Result: #{result[1]}"
+  puts "Result: #{result[1]}"
+end
