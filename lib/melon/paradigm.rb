@@ -15,9 +15,8 @@ module Melon
     end
 
     # Adds a remote server
-    # TODO: remove?
     def add_remote remote_storage
-      add_server remote_storage
+      raise NotImplementedError
     end
 
     # Adds a storage server

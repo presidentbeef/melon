@@ -17,4 +17,10 @@ module Melon
   def self.servers
     @drb_servers
   end
+
+  class Paradigm
+    def add_remote host: "localhost", port: 8484
+      self.add_server Melon::DRb::RemoteStorage.new(host: host, port: port)
+    end
+  end
 end
