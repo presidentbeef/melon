@@ -14,12 +14,6 @@ module Melon
       add_server @local
     end
 
-    # Adds a remote server
-    # TODO: remove?
-    def add_remote remote_storage
-      add_server remote_storage
-    end
-
     # Adds a storage server
     def add_server server
       @servers << server

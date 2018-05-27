@@ -1,7 +1,9 @@
+require 'melon/drb'
+
 class Chat
   def initialize name
     @name = name
-    @melon = Melon.with_zmq
+    @melon = Melon.with_drb
   end
 
   def chat message
@@ -42,6 +44,6 @@ class Chat
   end
 
   def add_remote port
-    @melon.add_remote port
+    @melon.add_remote port: port
   end
 end

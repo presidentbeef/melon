@@ -1,15 +1,15 @@
-require_relative '../../lib/melon'
+require 'melon/drb'
 
 unless ARGV[2]
-  abort "news_reader.rb ADDRESS PORT TOPIC"
+  abort "news_reader.rb HOST PORT TOPIC"
 end
 
-address = ARGV[0]
+host = ARGV[0]
 port = ARGV[1]
 topic = ARGV[2]
 
-melon = Melon.with_zmq
-melon.add_remote port, address
+melon = Melon.with_drb
+melon.add_remote port: port, host: host
 
 template = [topic, String]
 
