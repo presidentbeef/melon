@@ -14,11 +14,6 @@ module Melon
       add_server @local
     end
 
-    # Adds a remote server
-    def add_remote remote_storage
-      raise NotImplementedError
-    end
-
     # Adds a storage server
     def add_server server
       @servers << server
