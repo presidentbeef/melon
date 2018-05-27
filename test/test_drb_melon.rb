@@ -14,8 +14,8 @@ class TestDRbMelon < Minitest::Test
     m1 = Melon.with_drb port: 8484
     m2 = Melon.with_drb port: 8585
 
-    m2.add_remote Melon::DRb::RemoteStorage.new(port: 8484)
-    m1.add_remote Melon::DRb::RemoteStorage.new(port: 8585)
+    m2.add_remote port: 8484
+    m1.add_remote port: 8585
 
     m1.store ["hello", "world"]
     m1.store ["hello", "world"]
@@ -32,8 +32,8 @@ class TestDRbMelon < Minitest::Test
     m1 = Melon.with_drb port: 8489
     m2 = Melon.with_drb port: 8580
 
-    m2.add_remote Melon::DRb::RemoteStorage.new(port: 8489)
-    m1.add_remote Melon::DRb::RemoteStorage.new(port: 8580)
+    m2.add_remote port: 8489
+    m1.add_remote port: 8580
 
     m1.store ["hello", "world"]
     m1.store ["hello", "world"]
@@ -48,8 +48,8 @@ class TestDRbMelon < Minitest::Test
     m1 = Melon.with_drb port: 8486
     m2 = Melon.with_drb port: 8587
 
-    m2.add_remote Melon::DRb::RemoteStorage.new(port: 8486)
-    m1.add_remote Melon::DRb::RemoteStorage.new(port: 8587)
+    m2.add_remote port: 8486
+    m1.add_remote port: 8587
 
     m1.write ["hello", "world"]
 
@@ -64,8 +64,8 @@ class TestDRbMelon < Minitest::Test
     m1 = Melon.with_drb port: 8488
     m2 = Melon.with_drb port: 8589
 
-    m2.add_remote Melon::DRb::RemoteStorage.new(port: 8488)
-    m1.add_remote Melon::DRb::RemoteStorage.new(port: 8589)
+    m2.add_remote port: 8488
+    m1.add_remote port: 8589
 
     m1.write ["hello", "world"]
     m2.write ["hello", "everyone"]
