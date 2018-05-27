@@ -1,3 +1,4 @@
+require_relative '../melon'
 require_relative 'drb/remote_storage'
 require_relative 'drb/storage_server'
 
