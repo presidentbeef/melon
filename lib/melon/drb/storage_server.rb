@@ -5,10 +5,17 @@ module Melon
     class StorageServer
       def initialize storage, host: "localhost", port: 8484
         @storage = storage
-        @port = port
-        @uri = "druby://#{host}:#{port}"
 
-        ::DRb.start_service(@uri, self)
+        begin
+          @uri = "druby://#{host}:#{port}"
+
+          ::DRb.start_service(@uri, self)
+        rescue Errno::EADDRINUSE
+          port += 1
+          retry
+        end
+
+        warn "Started Melon server on #@uri"
       end
 
       def stop
