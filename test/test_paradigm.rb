@@ -1,3 +1,4 @@
+require_relative 'test_helper'
 require_relative '../lib/melon/paradigm'
 
 class TestParadigm < Minitest::Test

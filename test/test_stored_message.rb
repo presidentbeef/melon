@@ -1,3 +1,5 @@
+require_relative 'test_helper'
+
 class TestStoredMessage < Minitest::Test
   def test_creation
     m = ["hello", "world"]
