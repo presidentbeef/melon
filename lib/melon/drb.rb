@@ -7,20 +7,18 @@ module Melon
 
   def self.with_drb local_storage: Melon::LocalStorage.new, host: "localhost", port: 8484
     @drb_servers << Melon::DRb::StorageServer.new(local_storage, host: host, port: port)
-    Melon::Paradigm.new(local_storage)
+    Melon::DRb::Paradigm.new(local_storage)
   end
 
   def self.stop_drb
     @drb_servers.each(&:stop)
   end
 
-  def self.servers
-    @drb_servers
-  end
-
-  class Paradigm
-    def add_remote host: "localhost", port: 8484
-      self.add_server Melon::DRb::RemoteStorage.new(host: host, port: port)
+  module DRb
+    class Paradigm < ::Melon::Paradigm
+      def add_remote host: "localhost", port: 8484
+        self.add_server Melon::DRb::RemoteStorage.new(host: host, port: port)
+      end
     end
   end
 end

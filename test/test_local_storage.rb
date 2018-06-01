@@ -1,3 +1,5 @@
+require_relative 'test_helper'
+
 class TestLocalStorage < Minitest::Test
   def setup
     @ls = Melon::LocalStorage.new
