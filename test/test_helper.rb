@@ -4,16 +4,30 @@ require 'minitest/pride'
 require_relative '../lib/melon'
 
 module CoreMelonTests
+  @port = 8000
+
+  def self.port
+    @port += 1
+  end
+
   def test_sanity
     assert_kind_of Melon::Paradigm, make_melon
   end
 
-  def test_store_take
-    m1 = make_melon port: 8484
-    m2 = make_melon port: 8585
+  def port1
+    @port1 ||= CoreMelonTests.port
+  end
 
-    m2.add_remote port: 8484
-    m1.add_remote port: 8585
+  def port2
+    @port2 ||= CoreMelonTests.port
+  end
+
+  def test_store_take
+    m1 = make_melon port: port1
+    m2 = make_melon port: port2
+
+    m2.add_remote port: port1
+    m1.add_remote port: port2
 
     m1.store ["hello", "world"]
     m1.store ["hello", "world"]
@@ -27,11 +41,11 @@ module CoreMelonTests
   end
 
   def test_store_take_all
-    m1 = make_melon port: 8489
-    m2 = make_melon port: 8580
+    m1 = make_melon port: port1
+    m2 = make_melon port: port2
 
-    m2.add_remote port: 8489
-    m1.add_remote port: 8580
+    m2.add_remote port: port1
+    m1.add_remote port: port2
 
     m1.store ["hello", "world"]
     m1.store ["hello", "world"]
@@ -43,11 +57,11 @@ module CoreMelonTests
   end
 
   def test_write_read
-    m1 = make_melon port: 8486
-    m2 = make_melon port: 8587
+    m1 = make_melon port: port1
+    m2 = make_melon port: port2
 
-    m2.add_remote port: 8486
-    m1.add_remote port: 8587
+    m2.add_remote port: port1
+    m1.add_remote port: port2
 
     m1.write ["hello", "world"]
 
@@ -59,11 +73,11 @@ module CoreMelonTests
   end
 
   def test_write_read_all
-    m1 = make_melon port: 8488
-    m2 = make_melon port: 8589
+    m1 = make_melon port: port1
+    m2 = make_melon port: port2
 
-    m2.add_remote port: 8488
-    m1.add_remote port: 8589
+    m2.add_remote port: port1
+    m1.add_remote port: port2
 
     m1.write ["hello", "world"]
     m2.write ["hello", "everyone"]
